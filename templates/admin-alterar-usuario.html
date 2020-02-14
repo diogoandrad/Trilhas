@@ -1,0 +1,141 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block content %}
+
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <h1 class="h4 mb-4 text-gray-800">Alterar Usuário <small></small></h1>
+
+          <hr>
+
+          {% if request.user.role == 'Administrador' or request.user.matricula == user.matricula %}
+            <div class="float-right float-sm-right float-md-right float-lg-right float-xl-right">
+              <a href="{% url 'consultar_users' %}" class="btn btn-std btn-icon-split">
+                <span class="icon text-white-50">
+                  <i class="fas fa-arrow-left"></i>
+                </span>
+                <span class="text">Voltar</span>
+              </a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <hr>
+
+            <div class="container">
+
+              <div class="row justify-content-center">
+
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+
+                  {% if user.imagem %}
+                    <img src="{{ user.imagem.url }}" class="rounded mx-auto d-block" alt="imagem de perfil"/>
+                  {% else %}
+                    <img src="{% static 'img/default_profile.png' %}" class="rounded mx-auto d-block" alt="imagem de perfil"/>
+                  {% endif %}
+
+                  <form class="form-container" enctype="multipart/form-data" method="post" action="">
+                    {% csrf_token %}
+                    <div class="form-group">
+
+                      <label>Nome:</label>
+                      {{ form.name }}
+
+                    </div>
+
+                    <div class="form-group">
+
+                      <label>Matrícula:</label>
+                      {{ form.matricula }}
+
+                    </div>
+
+                    <div class="form-group">
+
+                      <label>E-mail:</label>
+                      {{ form.email }}
+
+                    </div>
+
+                    <div class="form-group">
+
+                      <label>Data de nascimento:</label>
+                      <div>{{ form.data_nascimento }}</div>
+
+                    </div>
+
+                    <div class="form-group">
+
+                      <label>Gênero:</label>
+                        {{ form.genero }}
+
+                    </div>
+
+                    <div class="form-group">
+                      {% if request.user.role == 'Administrador' %}
+
+                      <label>Permissão:</label>
+                        {{ form.role }}
+
+                      {% endif %}
+                    </div>
+
+                  </form>
+
+                  <hr>
+
+                  <div class="text-right mb-4">
+                      {% if request.user.matricula == user.matricula %}
+                        <a href="{% url 'password_change' %}" class="btn btn-outline-dark">Alterar senha</a>
+                      {% endif %}
+
+                    {% if request.user.role == 'Administrador' and request.user.matricula != user.matricula %}
+                        <a href="" class="btn btn-outline-danger" data-toggle="modal" data-target="#modalExcluirUsuario">Excluir</a>
+                      {% endif %}
+
+                      <a href="{% url 'user_update' user.pk %}" class="btn btn-outline-info">Editar</a>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div class="modal fade" id="modalExcluirUsuario" tabindex="-1" role="dialog" aria-labelledby="modalExcluirUsuarioTitulo" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered" role="document">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="modalExcluirUsuarioTitulo">Deseja excluir este usuário?</h5>
+                      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                      </button>
+                    </div>
+                    <div class="modal-body">
+
+                      Clique "Confirmar" para excluir o usuário. <strong>Não é possível reverter esta ação!</strong>
+
+                    </div>
+                    <div class="modal-footer">
+                      <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                      <a class="btn btn-success" href="">Confirmar</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            {% else %}
+
+              <p style="color: red"> Você não tem as credenciais necessárias para acessar este perfil. </p>
+
+            {% endif %}
+
+          </div>
+          <!-- /.container-fluid -->
+
+{% endblock %}

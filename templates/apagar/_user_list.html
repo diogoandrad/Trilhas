@@ -1,0 +1,47 @@
+{% load permission_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    {% for user in users %}
+    <ul>
+
+        <li>{{ user.name }} ({{ user.matricula }}) </li>
+        <p>{% if user.is_staff %} <font color="red">Admin</font></p>
+        {% else %}
+
+            {% if user|has_role:'estudante' %}
+            <p><font color="green">{{ user.role }}</font></p>
+            {% else %}
+            <p><font color="brown">{{ user.role }}</font></p>
+            {% endif %}
+
+            <pre> Último login:   {{ user.last_login }}</pre>
+
+
+        {% endif %}
+
+        {% if request.user.matricula == user.matricula %}
+            <a href="{% url 'user_update' user.pk %}">Editar</a>
+        {% endif %}
+
+        {% if request.user.is_staff %}
+            <a href="{% url 'user_delete' user.pk %}">Excluir</a>
+            <p><a href="{% url 'user_change_admin' user.pk %}">Editar perfil do usuário como Admin</a> </p>
+        {% endif %}</p>
+        <p>-</p>
+    </ul>
+    {% endfor %}
+
+    <p> <a href="{% url 'home' %}">Home</a> </p>
+
+    <a href="{% url 'logout' %}">Logout</a>
+
+
+</body>
+</html>

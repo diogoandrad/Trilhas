@@ -1,0 +1,39 @@
+/* Botões */
+
+.btn-std {
+	color: #fff;
+    background-color: #003869;
+    border-color: #003869;
+}
+
+.btn-outline-std{
+  color: #003869;
+  border-color: #003869;
+}
+
+.btn-outline-std:hover {
+  color: #fff;
+  background-color: #003869;
+  border-color: #003869;
+}
+
+.btn-login {
+  background-color: #003869;
+  color: #fff;
+}
+
+.btn-login:hover {
+  opacity: 0.8;
+}
+
+/* Textos */
+
+.text-std {
+	color: #003869;
+}
+
+/* Outros */
+
+textarea {
+	resize: none;
+}

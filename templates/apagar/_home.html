@@ -1,0 +1,44 @@
+{% load permission_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% csrf_token %}
+    {% block content %}
+    {% if user.is_authenticated %}
+      Oi {{ user.name }}! Você está logado como {{ user.role }}
+    {% endif %}
+    {% if request.user.is_staff %}
+    True
+    {% endif %}
+    {% endblock %}
+
+
+    <h1>HOME TESTING...</h1>
+    {% if request.user.is_staff or request.user|has_role:'moderador, administrador' %}
+        <a href="{% url 'user_list' %}">Usuários</a>
+    {% endif %}
+
+     <p>{% if request.user.is_staff or request.user|has_role:' administrador' %}
+            <a href="{% url 'admin_gerar_convite' %}">Enviar Convite</a>
+        {% endif %}</p>
+
+    {% if request.user|has_role:'estudante' %}
+        Estudante
+    {% endif %}
+    <p>{% if request.user|has_role:'moderador' %}
+        Moderador
+    {% endif %}</p>
+    <p>{% if request.user|has_role:'administrador' %}
+        Administrador
+    {% endif %}</p>
+
+
+    <a href="{% url 'logout' %}">Logout</a>
+
+</body>
+</html>

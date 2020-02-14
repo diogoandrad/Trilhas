@@ -1,0 +1,86 @@
+{% extends "_base.html" %}
+{% block content %}
+
+
+      <!-- Begin Page Content -->
+      <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <h1 class="h4 mb-4 text-gray-800">Upload de Certificado ({{ user_link.cursoLink.curso.trilha }} / {{ user_link.cursoLink.curso }} / {{ user_link.cursoLink }})<small></small></h1>
+
+        <hr>
+
+          {% if request.user.role == 'Administrador' or request.user.matricula == user.matricula %}
+
+            <div class="float-right float-sm-right float-md-right float-lg-right float-xl-right">
+              <a href="{% url 'user_link_curso' user.pk %}" class="btn btn-std btn-icon-split">
+                <span class="icon text-white-50">
+                  <i class="fas fa-arrow-left"></i>
+                </span>
+                <span class="text">Voltar</span>
+              </a>
+            </div>
+
+            <div class="clearfix"></div>
+
+            <hr>
+
+            <div class="container">
+
+              <div class="row justify-content-center">
+
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-6 col-xl-6">
+
+                  <form class="form-container" enctype="multipart/form-data" method="post" action="">
+                    {% csrf_token %}
+
+                    <div class="form-group">
+
+                      {{ form }}
+
+                      {% for error in form.errors %}
+                          <p style="color: red"> {{ error }} </p>
+                      {% endfor %}
+
+                    </div>
+
+                    <hr>
+
+                    <div class="text-right mb-4">
+
+                      <a href="{% url 'user_link_curso' user.pk %}" class="btn btn-outline-danger">
+                        <span class="icon text-50">
+                          <i class="fas fa-ban"></i>
+                        </span>
+                        <span class="text">Cancelar</span>
+                      </a>
+                      <button type="submit" class="btn btn-outline-success">
+                        <span class="icon text-50">
+                          <i class="fas fa-check"></i>
+                        </span>
+                        <span class="text">Salvar</span>
+                      </button>
+
+                    </div>
+
+
+                  </form>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          {% else %}
+
+            <p style="color: red"> Você não tem as credenciais necessárias para acessar esta página. </p>
+
+          {% endif %}
+
+      </div>
+</div>
+        <!-- /.container-fluid -->
+
+
+{% endblock %}

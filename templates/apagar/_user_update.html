@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h3>Perfil</h3>
+
+    {% if request.user.matricula == user.matricula or not request.user.is_staff %}
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+
+            <img src="{{ user.imagem.url }}" alt="" />
+
+            {% if user.is_staff %}
+                <font color="gray" size="2">Usuário Admin</font>
+            {% else %}
+                <font color="gray" size="2"> Usuário Não Admin</font>
+            {% endif %}
+            <p><button type="submit" class="btn btn-primary">Salvar</button></p>
+        </form>
+
+        <a href="{% url 'password_change' %}">Alterar senha</a>
+
+    {% else %}
+        <p>Nome: {{ user.name }}</p>
+        <p>Matrícula: {{ user.matricula }}</p>
+        <p>E-mail: {{ user.email }}</p>
+        <p>Data de nascimento: {{ user.data_nascimento }}</p>
+        <p>Permissão: {{ user.role }} <a href="{% url 'user_change_admin' user.pk %}">Alterar Permissão</a> </p>
+        <p>Foto: <img src="{{ user.imagem.url }}" alt=""> </p>
+         <img src="{{ user.imagem.url }}" alt="" />
+
+        <a href="{% url 'user_delete' user.pk %}" class="btn btn-danger btn-circle btn-sm ml-2">Deletar Usuário</a>
+
+    {% endif %}
+
+    <p><a href="{% url 'consultar_users' %}">Voltar</a></p>
+
+
+</body>
+</html>

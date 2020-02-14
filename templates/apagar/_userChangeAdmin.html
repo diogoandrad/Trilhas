@@ -1,0 +1,36 @@
+{% load permission_tags %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<h1>Gerenciamento de permissões</h1>
+
+<p>Nome: {{ user.name }}</p>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% if user|has_role:'administrador' %}
+            O usuário é um Admin
+        {% endif %}
+
+        {% if user|has_role:'moderador' %}
+            O usuário é um Moderador
+        {% endif %}
+
+        {% if user|has_role:'estudante' %}
+            O usuário é um estudante
+        {% endif %}
+
+
+        {{ form_is_staff.as_p }}
+
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Save</button>
+    </form>
+
+</body>
+</html>

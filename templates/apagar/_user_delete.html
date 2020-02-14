@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+    Deseja excluir o registro abaixo?
+    <ul>
+        {{ user.first_name }} {{ user.last_name }} ({{ user.matricula }})
+    </ul>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Excluir</button>
+    </form>
+
+
+</body>
+</html>

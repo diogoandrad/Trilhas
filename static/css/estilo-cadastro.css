@@ -1,0 +1,66 @@
+main {
+  background-image: url("../img/fundo.png");
+  background-repeat: no-repeat;
+    background-size: 100%;
+    background-size: cover;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: 3em;
+    overflow: auto;
+    color: black;
+    text-align: center;
+}
+
+.form-container {
+  padding: 77px 37px 23px 37px;
+  border-radius: 5px; /* 5px 5px 0px 0px pro container cinza de Thaty */
+  background: #fff;
+  box-shadow: 0px 0px 2px 0px #000;
+}
+
+main .btn-login {
+  background-color: #003869;
+  color: #fff;
+}
+
+main .form-container input[type="submit"]:hover {
+  opacity: 0.8;
+}
+
+main .form-container img {
+  margin-top: -50px;
+  margin-bottom: 50px;
+}
+
+main .form-container a {
+  text-decoration: underline;
+  color: #003869;
+  font-size: 0.8em;
+}
+
+main .form-container a:hover {
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+main input.form-control {
+  height: 50px;
+}
+
+main input#email {
+  cursor: not-allowed;
+}
+
+main select.form-control {
+  height: 50px;
+}
+
+ /* .forgot-password {
+  padding: 10px;
+  border-radius: 0px 0px 5px 5px;
+  background-color: #eee;
+  box-shadow: ;
+} container cinza de Thaty */

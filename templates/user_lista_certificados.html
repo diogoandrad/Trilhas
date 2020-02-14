@@ -1,0 +1,70 @@
+{% extends '_base.html' %}
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <h1 class="h4 mb-4 text-gray-800">{{ user.name }}</h1>
+
+          <hr>
+
+          <div class="float-right float-sm-right float-md-right float-lg-right float-xl-right">
+            <a href="{% url 'consultar_users' %}" class="btn btn-std btn-icon-split">
+              <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+              </span>
+              <span class="text">Voltar</span>
+            </a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <hr>
+
+          <!-- Tabela Certificado -->
+          <div class="card shadow mt-4 mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-std">Certificados</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Trilha</th>
+                      <th>Curso</th>
+                      <th>Link</th>
+                      <th>Carga Horária</th>
+                      <th>Certificado</th>
+                      <th>Data Upload</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for link in allLinks.all %}
+                      {% for userCertificado in userLinks %}
+                          {% if userCertificado.certificado and userCertificado.cursoLink == link %}
+                            <tr>
+                              <td>{{ link.curso.trilha }}</td>
+                                <td>{{ link.curso }}</td>
+                                <td>{{ link }}</td>
+                                <td>{{ link.carga_horaria }} h</td>
+                                <td><a target="_blank" href="{{ userCertificado.certificado.url }}">Abrir</a></td>
+                                <td>{{ userCertificado.data_upload | date:"d/m/Y" }}</td>
+                            </tr>
+                          {% endif %}
+                        {% endfor %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+{% endblock %}

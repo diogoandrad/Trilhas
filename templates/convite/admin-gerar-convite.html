@@ -1,0 +1,167 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+<!-- Begin Page Content -->
+<div>
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h4 mb-4 text-gray-800">Gerenciar Usuários <small>(Gerar Convite)</small></h1>
+
+        <hr>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <div class="row">
+
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-4 col-xl-4 form-group">
+
+                  <input type="text"
+                         class="form-control"
+                         placeholder="Nome completo"
+                         name="{{ form.name.name }}"
+                         required>
+
+                    {% for error in form.name.errors %}
+                        <p style="color: red"> {{ error }} </p>
+                    {% endfor %}
+
+                </div>
+
+
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-5 col-xl-5 form-group">
+
+                    <input type="email"
+                           class="form-control"
+                           placeholder="E-mail"
+                           name="{{ form.email.name }}"
+                           required>
+
+                    {% for error in form.email.errors %}
+                        <p style="color: red"> {{ error }} </p>
+                    {% endfor %}
+
+                </div>
+
+                <div class="col-xs-12 col-sm-12 col-md-6 col-lg-3 col-xl-3 form-group">
+
+                    <button class="btn btn-success btn-circle" type="submit">
+                          <span class="icon text-white-50">
+                            <i class="fas fa-plus"></i>
+                          </span>
+                    </button>
+
+                </div>
+
+            </div>
+
+            <hr class="mt-0">
+
+        </form>
+
+        <h1 class="h4 mb-4 text-gray-800"><small>Listas de Convites</small></h1>
+
+        <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-std">Convites a Enviar</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                              <th>Nome</th>
+                              <th>E-mail</th>
+                                <th>Apagar</th>
+                            </tr>
+                          </thead>
+                         <tbody>
+                        {% for convite in convites %}
+                            {% if convite.enviado == 0 %}
+                                <tr>
+                                    <td>
+                                        {{ convite.name }}
+                                    </td>
+                                    <td>
+                                        {{ convite.email }}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'convite_delete' convite.pk %}" class="btn btn-danger btn-circle">
+                                          <span class="icon text-white-50">
+                                            <i class="fas fa-minus"></i>
+                                          </span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                         </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mensagem de confirmação de envio -->
+        {% if messages %}
+            {% for message in messages %}
+            <div>
+                <p style="color: green">{{ message }}</p>
+            </div>
+            {% endfor %}
+        {% endif %}
+
+        <a href="{% url 'enviar_convite' %}">
+            <input type="submit" name="enviar" class="btn btn-std" value="Enviar convites">
+        </a>
+
+        <hr>
+         <!-- DataTales Example -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-std">Convites Enviados</h6>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                        <thead>
+                            <tr>
+                              <th>Nome</th>
+                              <th>E-mail</th>
+                                <th>Desativar</th>
+                            </tr>
+                          </thead>
+                         <tbody>
+                        {% for convite in convites %}
+                            {% if convite.enviado %}
+                                <tr>
+                                    <td>
+                                        {{ convite.name }}
+                                    </td>
+                                    <td>
+                                        {{ convite.email }}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'convite_delete' convite.pk %}" class="btn btn-danger btn-circle">
+                                          <span class="icon text-white-50">
+                                            <i class="fas fa-minus"></i>
+                                          </span>
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                         </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- /.container-fluid -->
+
+</div>
+<!-- End of Main Content -->
+{% endblock %}

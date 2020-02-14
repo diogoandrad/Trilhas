@@ -1,0 +1,89 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+    <body>
+        <p>Usuário: {{ user.name }}</p>
+        <p>E-mail: {{ user.email }}</p>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            {{ form.trilha }}
+
+            <button type="submit">Salvar</button>
+        </form>
+
+        <p>Matriculado em:  </p>
+        <table border="1">
+            <thead>
+                <th>Trilha</th>
+                <th>Carga Trilha</th>
+                <th>Curso</th>
+                <th>Carga Curso</th>
+                <th>Link Curso</th>
+                <th>Carga Horária</th>
+                <th>Certificado</th>
+            </thead>
+            <tbody>
+                {% for linkCurso in links_users %}
+                    {% for link in linkCurso %}
+                        <tr>
+                            <td>{{ link.curso.trilha }}</td>
+                            <td>{{ link.curso.trilha.carga_horaria }}</td>
+                            <td>{{ link.curso }}</td>
+                            <td>{{ link.curso.carga_horaria }}</td>
+                            <td>{{ link }}</td>
+                            <td>{{ link.carga_horaria }} h</td>
+                            {% if userLinks %}
+                                {% for userCertificado in userLinks %}
+                                    {% if userCertificado.certificado and userCertificado.cursoLink == link %}
+                                        <td><a href="{{ userCertificado.certificado.url }}">Abrir</a></td>
+                                    {% elif userCertificado.cursoLink == link %}
+                                        <td><a href="{% url 'upload_certificado' user.pk link.pk %}">Upload</a></td>
+                                    {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <td><a href="{% url 'upload_certificado' user.pk link.pk %}">Upload</a></td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <p>Certificados Disponíveis:  </p>
+        <table border="1">
+            <thead>
+                <th>Trilha</th>
+                <th>Curso</th>
+                <th>Link Curso</th>
+                <th>Carga Horária</th>
+                <th>Certificado</th>
+                <th>Data do Upload</th>
+            </thead>
+            <tbody>
+                {% for link in allLinks.all %}
+                    {% for userCertificado in userLinks %}
+                        {% if userCertificado.certificado and userCertificado.cursoLink == link %}
+                            <tr>
+                                <td>{{ link.curso.trilha }}</td>
+                                <td>{{ link.curso }}</td>
+                                <td>{{ link }}</td>
+                                <td>{{ link.carga_horaria }} h</td>
+                                <td><a href="{{ userCertificado.certificado.url }}">Abrir</a></td>
+                                <td>{{ userCertificado.data_upload }}</td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+        <a href="{% url 'consultar_users' %}">Voltar</a>
+
+    </body>
+</html>

@@ -1,0 +1,590 @@
+{% extends "_base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+
+    <!-- Begin Page Content -->
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h4 mb-4 text-gray-800"> {{ trilha.nome }} ( {{ trilha.carga_horaria }} h ) </h1>
+
+        <hr>
+
+        <div class="float-right float-sm-right float-md-right float-lg-right float-xl-right">
+            <a href="{% url 'gerenciar_trilhas' %}" class="btn btn-std btn-icon-split">
+                  <span class="icon text-white-50">
+                    <i class="fas fa-arrow-left"></i>
+                  </span>
+                <span class="text">Voltar</span>
+            </a>
+            {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+            <a href="" class="btn btn-success btn-icon-split" data-toggle="modal" data-target="#modalNovoCurso{{ trilha.id }}">
+                  <span class="icon text-white-50">
+                    <i class="fas fa-plus"></i>
+                  </span>
+                <span class="text">Adicionar</span>
+            </a>
+            {% endif %}
+        </div>
+
+        <div class="clearfix"></div>
+
+        <!-- Modal Novo Curso-->
+        <div class="modal fade" id="modalNovoCurso{{ trilha.id }}" tabindex="-1" role="dialog" aria-labelledby="modalNovoCursoTitulo" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalNovoCursoTitulo">Novo Curso</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+
+                        <form method="POST" enctype="multipart/form-data" action="">
+                            {% csrf_token %}
+                            <div class="form-group">
+
+                                <!-- <input type="text" class="form-control" name="{{ form.name }}" id="inputTitulo" placeholder="Título" required> -->
+                                {{ form.nome }}
+                                {% for error in form.name.errors %}
+                                <p style="color: red"> {{ error }} </p>
+                                {% endfor %}
+
+                            </div>
+                            <div class="form-group">
+
+                                <!-- <textarea class="form-control" name="{{ form.descricao }}" id="inputDescricao" placeholder="Descrição" rows="5"></textarea> -->
+                                {{ form.descricao }}
+                                {% for error in form.descricao.errors %}
+                                <p style="color: red"> {{ error }} </p>
+                                {% endfor %}
+
+                            </div>
+
+                            <div class="modal-footer">
+                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                                <button name="AddCurso" class="btn btn-std" type="submit">Salvar</button>
+                            </div>
+
+                        </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        {% if cursos %}
+
+            {% for curso in cursos %}
+            <div class="container">
+
+                <!-- Início do card -->
+                {% if forloop.counter0|divisibleby:2 %}
+                    <div class="row mt-5 mb-5">
+
+                        <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 border-right">
+
+                            <div class="accordion" id="accordion1">
+
+                                <div class="card border-bottom border-light shadow-lg">
+
+                                    <div class="card-header bg-info" id="headingOne" data-toggle="collapse" data-target="#collapseCardOne{{ curso.id }}" aria-expanded="true" aria-controls="collapseCardOne" style="cursor: pointer;">
+
+                                        <h2 class="">
+
+                                            <button class="btn btn-link text-white" type="button" data-toggle="collapse" data-target="#collapseCardOne" aria-expanded="true" aria-controls="collapseCardOne">
+                                                {{ curso.nome }}
+                                            </button>
+
+                                        </h2>
+
+                                    </div>
+
+                                    <div id="collapseCardOne{{ curso.id }}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion1">
+
+                                        <div class="card-body">
+
+                                            {{ curso.descricao }}
+
+                                            <hr>
+
+                                            <!-- Tabela de links e botões editáveis -->
+                                            <div class="table-responsive">
+                                                <ol>
+                                                    <table class="table table-sm table-striped table-borderless">
+                                                        {% for linkCurso in linksCursos %}
+                                                        {% if linkCurso.curso == curso %}
+                                                        <tr>
+                                                            <th scope="row"> <li></li> </th>
+                                                            <td><a target="_blank" href="{{ linkCurso.link }}">{{ linkCurso.nome }}</a></td>
+                                                            <td>
+                                                                {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+                                                                <a href="#" class="btn btn-info btn-circle btn-sm float-right" data-toggle="modal" data-target="#modalAlterarLink{{ linkCurso.pk }}"><i class="fas fa-edit"></i></a>
+                                                                <a href="#" class="btn btn-danger btn-circle btn-sm mr-2 float-right" data-toggle="modal" data-target="#modalExcluirLink{{ linkCurso.pk }}"><i class="fas fa-trash"></i></a>
+                                                                {% endif %}
+                                                            </td>
+                                                        </tr>
+                                                        <!-- Modal Alterar link-->
+                                                        <div class="modal fade" id="modalAlterarLink{{ linkCurso.pk }}" tabindex="-1" role="dialog" aria-labelledby="modalAlterarLinkTitulo" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="modalAlterarLinkTitulo{{ linkCurso.pk }}">Alterar link</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+
+                                                                        <form method="POST" action="">
+                                                                            {% csrf_token  %}
+                                                                            <div class="form-group">
+
+                                                                                <input type="text"
+                                                                                       class="form-control"
+                                                                                       name="{{ formLinkEdit.nome.name }}"
+                                                                                       value="{{ linkCurso.nome }}"
+                                                                                       required>
+
+                                                                                <!--{{ formLinkEdit.nome }}-->
+
+                                                                                {% for error in formLinkEdit.name.errors %}
+                                                                                <p style="color: red"> {{ error }} </p>
+                                                                                {% endfor %}
+
+                                                                            </div>
+                                                                            <div class="form-group">
+
+                                                                                <!--{{ formLinkEdit.link }}-->
+
+                                                                                <input type="url"
+                                                                                       class="form-control"
+                                                                                       name="{{ formLinkEdit.link.name }}"
+                                                                                       value="{{ linkCurso.link }}"
+                                                                                       required>
+
+                                                                                {% for error in formLinkEdit.link.errors %}
+                                                                                <p style="color: red"> {{ error }} </p>
+                                                                                {% endfor %}
+
+                                                                            </div>
+
+                                                                            <div class="form-group">
+
+                                                                                <!--{{ formLinkEdit.carga_horaria }}-->
+
+                                                                                <input type="number"
+                                                                                       class="form-control"
+                                                                                       name="{{ formLinkEdit.carga_horaria.name }}"
+                                                                                       value="{{ linkCurso.carga_horaria }}"
+                                                                                       required>
+
+                                                                                {% for error in formLinkEdit.carga_horaria.errors %}
+                                                                                <p style="color: red"> {{ error }} </p>
+                                                                                {% endfor %}
+
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                                                                <button name="LinkEdit" value="{{ linkCurso.pk }}" type="submit" class="btn btn-success">Salvar</button>
+                                                                            </div>
+                                                                        </form>
+
+                                                                    </div>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="modal fade" id="modalExcluirLink{{ linkCurso.pk }}" tabindex="-1" role="dialog" aria-labelledby="modalExcluirLinkTitulo" aria-hidden="true">
+                                                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                <div class="modal-content">
+                                                                    <div class="modal-header">
+                                                                        <h5 class="modal-title" id="modalExcluirLinkTitulo{{ linkCurso.pk }}">Deseja <strong>excluir</strong> este link?</h5>
+                                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                            <span aria-hidden="true">&times;</span>
+                                                                        </button>
+                                                                    </div>
+                                                                    <div class="modal-body">
+
+                                                                        Clique "Confirmar" abaixo para excluir o link. <strong>Não é possível reverter esta ação!</strong>
+
+                                                                    </div>
+                                                                    <div class="modal-footer">
+                                                                        <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                                                        <a class="btn btn-success" href="{% url 'apagar_curso' linkCurso.pk %}">Confirmar</a>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        {% endif %}
+                                                        {% endfor %}
+                                                    </table>
+                                                </ol>
+                                            </div>
+
+                                            <hr>
+
+                                            {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+                                            <div class="card text-center">
+
+                                                <div class="card-header">
+
+                                                    <ul class="nav nav-tabs card-header-tabs">
+                                                        <li class="nav-item">
+                                                            <a class="nav-link active" href="">Adicionar link</a>
+                                                        </li>
+                                                        <li class="nav-item">
+                                                            <a class="nav-link disabled" href="#" aria-disabled="true">Adicionar arquivo</a>
+                                                        </li>
+                                                    </ul>
+
+                                                </div>
+
+                                                <div class="card-body">
+
+                                                    <p class="card-text small">Adicione um link ao curso para complementar o seu conteúdo.</p>
+                                                    <button class="btn btn-outline-std" data-toggle="modal" data-target="#modalNovoLink{{ curso.id }}">Adicionar</button>
+
+                                                </div>
+
+                                            </div>
+                                            <hr>
+                                            {% endif %}
+
+                                            <div class="text-right mt-2">
+
+                                                {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+                                                <a href="{% url 'curso_alterar' curso.pk %}" class="btn btn-outline-info">Editar Curso</a>
+                                                <a href="#" class="btn btn-outline-danger" data-toggle="modal" data-target="#modalExcluirCurso{{ curso.pk }}">Excluir Curso</a>
+                                                {% endif %}
+
+                                                <div class="modal fade" id="modalExcluirCurso{{ curso.id }}" tabindex="-1" role="dialog" aria-labelledby="modalExcluirCursoTitulo" aria-hidden="true">
+                                                    <div class="modal-dialog modal-dialog-centered" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="modalExcluirCursoTitulo{{ curso.id }}">Deseja <strong>excluir</strong> este curso?</h5>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+
+                                                                Clique "Confirmar" abaixo para excluir o Curso. <strong>Não é possível reverter esta ação!</strong>
+
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                                                <a class="btn btn-success" href="{% url 'curso_apagar' curso.pk %}">Confirmar</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6"></div>
+
+                            </div>
+                            {% endif %}
+                            <!-- Término do card -->
+
+
+                            <!-- Início do card -->
+                            {% if not forloop.counter0|divisibleby:2 %}
+                                <div class="row mt-5 mb-5">
+                                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6"></div>
+                                    <div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xl-6 border-left">
+
+                                        <div class="accordion" id="accordion1">
+
+                                            <div class="card border-bottom border-light shadow-lg">
+
+                                                <div class="card-header bg-info" id="headingOne" data-toggle="collapse" data-target="#collapseCardOne{{ curso.id }}" aria-expanded="true" aria-controls="collapseCardOne" style="cursor: pointer;">
+
+                                                    <h2 class="">
+
+                                                        <button class="btn btn-link text-white" type="button" data-toggle="collapse" data-target="#collapseCardOne" aria-expanded="true" aria-controls="collapseCardOne">
+                                                            {{ curso.nome }}
+                                                        </button>
+
+                                                    </h2>
+
+                                                </div>
+
+                                                <div id="collapseCardOne{{ curso.id }}" class="collapse" aria-labelledby="headingOne" data-parent="#accordion1">
+
+                                                    <div class="card-body">
+                                                        {{ curso.descricao }}
+
+                                                        <hr>
+
+                                                        <!-- Tabela de links e botões editáveis -->
+                                                        <div class="table-responsive">
+                                                            <ol>
+                                                                <table class="table table-sm table-striped table-borderless">
+                                                                    {% for linkCurso in linksCursos %}
+                                                                    {% if linkCurso.curso == curso %}
+                                                                    <tr>
+                                                                        <th scope="row"> <li></li> </th>
+                                                                        <td><a target="_blank" href="{{ linkCurso.link }}">{{ linkCurso.nome }}</a></td>
+                                                                        <td>
+                                                                            {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+                                                                            <a href="#" class="btn btn-info btn-circle btn-sm float-right" data-toggle="modal" data-target="#modalAlterarLink{{ linkCurso.pk }}"><i class="fas fa-edit"></i></a>
+                                                                            <a href="#" class="btn btn-danger btn-circle btn-sm mr-2 float-right" data-toggle="modal" data-target="#modalExcluirLink{{ linkCurso.pk }}"><i class="fas fa-trash"></i></a>
+                                                                            {% endif %}
+                                                                        </td>
+                                                                    </tr>
+                                                                    <!-- Modal Alterar link-->
+                                                                    <div class="modal fade" id="modalAlterarLink{{ linkCurso.pk }}" tabindex="-1" role="dialog" aria-labelledby="modalAlterarLinkTitulo" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="modalAlterarLinkTitulo{{ linkCurso.pk }}">Alterar link</h5>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+
+                                                                                    <form method="POST" action="">
+                                                                                        {% csrf_token  %}
+                                                                                        <div class="form-group">
+
+                                                                                            <input type="text"
+                                                                                                   class="form-control"
+                                                                                                   name="{{ formLinkEdit.nome.name }}"
+                                                                                                   value="{{ linkCurso.nome }}"
+                                                                                                   required>
+
+                                                                                            <!--{{ formLinkEdit.nome }}-->
+
+                                                                                            {% for error in formLinkEdit.name.errors %}
+                                                                                            <p style="color: red"> {{ error }} </p>
+                                                                                            {% endfor %}
+
+                                                                                        </div>
+                                                                                        <div class="form-group">
+
+                                                                                            <!--{{ formLinkEdit.link }}-->
+
+                                                                                            <input type="url"
+                                                                                                   class="form-control"
+                                                                                                   name="{{ formLinkEdit.link.name }}"
+                                                                                                   value="{{ linkCurso.link }}"
+                                                                                                   required>
+
+                                                                                            {% for error in formLinkEdit.link.errors %}
+                                                                                            <p style="color: red"> {{ error }} </p>
+                                                                                            {% endfor %}
+
+                                                                                        </div>
+
+                                                                                        <div class="form-group">
+
+                                                                                            <!--{{ formLinkEdit.carga_horaria }}-->
+
+                                                                                            <input type="number"
+                                                                                                   class="form-control"
+                                                                                                   name="{{ formLinkEdit.carga_horaria.name }}"
+                                                                                                   value="{{ linkCurso.carga_horaria }}"
+                                                                                                   required>
+
+                                                                                            {% for error in formLinkEdit.carga_horaria.errors %}
+                                                                                            <p style="color: red"> {{ error }} </p>
+                                                                                            {% endfor %}
+
+                                                                                        </div>
+
+                                                                                        <div class="modal-footer">
+                                                                                            <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                                                                            <button name="LinkEdit" value="{{ linkCurso.pk }}" type="submit" class="btn btn-success">Salvar</button>
+                                                                                        </div>
+                                                                                    </form>
+
+                                                                                </div>
+
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    <div class="modal fade" id="modalExcluirLink{{ linkCurso.pk }}" tabindex="-1" role="dialog" aria-labelledby="modalExcluirLinkTitulo" aria-hidden="true">
+                                                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                            <div class="modal-content">
+                                                                                <div class="modal-header">
+                                                                                    <h5 class="modal-title" id="modalExcluirLinkTitulo{{ linkCurso.pk }}">Deseja <strong>excluir</strong> este link?</h5>
+                                                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                        <span aria-hidden="true">&times;</span>
+                                                                                    </button>
+                                                                                </div>
+                                                                                <div class="modal-body">
+
+                                                                                    Clique "Confirmar" abaixo para excluir o link. <strong>Não é possível reverter esta ação!</strong>
+
+                                                                                </div>
+                                                                                <div class="modal-footer">
+                                                                                    <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                                                                    <a class="btn btn-success" href="{% url 'apagar_curso' linkCurso.pk %}">Confirmar</a>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    {% endif %}
+                                                                    {% endfor %}
+                                                                </table>
+                                                            </ol>
+                                                        </div>
+
+                                                        <hr>
+
+                                                        {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+                                                        <div class="card text-center">
+
+                                                            <div class="card-header">
+
+                                                                <ul class="nav nav-tabs card-header-tabs">
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link active" href="">Adicionar link</a>
+                                                                    </li>
+                                                                    <li class="nav-item">
+                                                                        <a class="nav-link disabled" href="#" aria-disabled="true">Adicionar arquivo</a>
+                                                                    </li>
+                                                                </ul>
+
+                                                            </div>
+
+                                                            <div class="card-body">
+
+                                                                <p class="card-text small">Adicione um link ao curso para complementar o seu conteúdo.</p>
+                                                                <button class="btn btn-outline-std" data-toggle="modal" data-target="#modalNovoLink{{ curso.id }}">Adicionar</button>
+
+                                                            </div>
+
+                                                        </div>
+                                                        <hr>
+                                                        {% endif %}
+
+                                                        <div class="text-right mt-2">
+
+                                                            {% if request.user.role == 'Administrador' or request.user.role == 'Moderador' %}
+                                                            <a href="{% url 'curso_alterar' curso.pk %}" class="btn btn-outline-info">Editar Curso</a>
+                                                            <a href="#" class="btn btn-outline-danger" data-toggle="modal" data-target="#modalExcluirCurso{{ curso.pk }}">Excluir Curso</a>
+                                                            {% endif %}
+
+                                                            <div class="modal fade" id="modalExcluirCurso{{ curso.id }}" tabindex="-1" role="dialog" aria-labelledby="modalExcluirCursoTitulo" aria-hidden="true">
+                                                                <div class="modal-dialog modal-dialog-centered" role="document">
+                                                                    <div class="modal-content">
+                                                                        <div class="modal-header">
+                                                                            <h5 class="modal-title" id="modalExcluirCursoTitulo{{ curso.id }}">Deseja <strong>excluir</strong> este curso?</h5>
+                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                <span aria-hidden="true">&times;</span>
+                                                                            </button>
+                                                                        </div>
+                                                                        <div class="modal-body">
+
+                                                                            Clique "Confirmar" abaixo para excluir o Curso. <strong>Não é possível reverter esta ação!</strong>
+
+                                                                        </div>
+                                                                        <div class="modal-footer">
+                                                                            <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                                                            <a class="btn btn-success" href="{% url 'curso_apagar' curso.pk %}">Confirmar</a>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+                                        {% endif %}
+                            <!-- Término do card -->
+
+                        </div>
+
+
+                        <!-- Modal Novo link-->
+                        <div class="modal fade" id="modalNovoLink{{ curso.id }}" tabindex="-1" role="dialog" aria-labelledby="modalNovoLinkTitulo" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalNovoLinkTitulo">Novo link</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+
+                                        <form method="POST" action="">
+                                            {% csrf_token %}
+
+                                            <div class="form-group">
+
+                                                {{ formLink.nome }}
+                                                {% for error in formLink.nome.errors %}
+                                                <p style="color: red"> {{ error }} </p>
+                                                {% endfor %}
+                                                <!--
+                                                <input type="text" class="form-control" name="{{ form.nome.name }}" id="inputTitulo" placeholder="Título" required>
+                                                 -->
+                                            </div>
+                                            <div class="form-group">
+
+                                                {{ formLink.link  }}
+                                                {% for error in formLink.link.errors %}
+                                                <p style="color: red"> {{ error }} </p>
+                                                {% endfor %}
+                                                <!--
+                                                <input type="url" class="form-control" name="{{ form.link.name }}" id="inputLink" placeholder="Link" required>
+                                                   -->
+                                            </div>
+                                            <div class="form-group">
+
+                                                {{ formLink.carga_horaria }}
+                                                {% for error in formLink.carga_horaria.errors %}
+                                                <p style="color: red"> {{ error }} </p>
+                                                {% endfor %}
+                                                <!--
+                                                <input type="url" class="form-control" name="{{ form.link.name }}" id="inputLink" placeholder="Link" required>
+                                                 -->
+                                            </div>
+
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancelar</button>
+                                                <button name="AddLink" value="{{ curso.id }}" type="submit" class="btn btn-std">Salvar</button>
+                                            </div>
+
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+        {% else %}
+            <p>Nenhum curso cadastrado para essa trilha!</p>
+        {% endif %}
+    </div>
+    <!-- /.container-fluid -->
+</div>
+
+{% endblock %}

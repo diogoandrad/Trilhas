@@ -1,0 +1,128 @@
+{% extends "_base.html" %}
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+          
+          <!-- Page Heading -->
+          <h1 class="h4 mb-4 text-gray-800">Gerenciar Usuários <small>(Consultar Usuário)</small></h1>
+
+          {% if request.user.role == 'Administrador' %}
+            <hr>
+
+            <div class="float-right float-sm-right float-md-right float-lg-right float-xl-right">
+              <a href="{% url 'admin_gerar_convite' %}" class="btn btn-success btn-icon-split ">
+                <span class="icon text-white-50">
+                  <i class="fas fa-plus"></i>
+                </span>
+
+                <span class="text">Adicionar</span>
+
+              </a>
+            </div>
+          {% endif %}
+
+          <div class="clearfix"></div>
+
+          <hr>
+
+          <!-- DataTales Example -->
+          <div class="card shadow mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-std">Usuários</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>E-mail</th>
+                      <th>Matrícula</th>
+                      <th>Perfil</th>
+                      <th>Cursos</th>
+                      <th>Certificados</th>
+                      <th>Último acesso</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for user in users %}
+                    <tr>
+                      <td>{{ user.name }}</td>
+                      <td>{{ user.email }}</td>
+                      <td>{{ user.matricula }}</td>
+                      <td>{{ user.role }}</td>
+
+                      {% if user.role == 'Estudante' and request.user.matricula == user.matricula %}
+                        <td style="text-align: center"><a href="{% url 'user_link_curso' user.pk %}">Detalhar</a></td>
+                        <td style="text-align: center"><a href="{% url 'user_lista_certificados' user.pk %}">Acessar</a></td>
+
+                      {% elif user.role == 'Estudante' and request.user.role != 'Estudante' %}
+                        <td style="text-align: center"><a href="{% url 'user_link_curso' user.pk %}">Detalhar</a></td>
+                        <td style="text-align: center"><a href="{% url 'user_lista_certificados' user.pk %}">Acessar</a></td>
+
+                      {% else %}
+                        <td style="text-align: center">-</td>
+                        <td style="text-align: center">-</td>
+                      {% endif %}
+
+                      {% if user.last_login %}
+                        <td style="text-align: center">{{ user.last_login | date:"d/m/Y" }}</td>
+                      {% else %}
+                        <td style="text-align: center">-</td>
+                      {% endif %}
+
+                      <td style="text-align: center">
+                        {% if request.user.matricula == user.matricula %}
+                          <a href="{% url 'user_update_preview' user.pk %}" class="btn btn-success btn-circle btn-sm"><i class="fas fa-edit"></i></a>
+                        {% elif request.user.role == 'Administrador' %}
+                          <a href="{% url 'user_update_preview' user.pk %}" class="btn btn-info btn-circle btn-sm"><i class="fas fa-edit"></i></a>
+                        {% else %}
+                          -
+                        {% endif %}
+
+                        {% if request.user.role == 'Administrador' and not request.user.matricula == user.matricula %}
+                          <a href="" class="btn btn-danger btn-circle btn-sm p-1" data-toggle="modal" data-target="#modalExcluirUsuario{{ user.pk }}"><i class="fas fa-trash"></i></a>
+
+                          <div class="modal fade" id="modalExcluirUsuario{{ user.pk }}"  role="dialog" aria-labelledby="modalExcluirUsuarioTitulo" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <h5 class="modal-title" id="modalExcluirUsuarioTitulo">Deseja excluir este usuário?</h5>
+                                  <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                  </button>
+                                </div>
+                                <div class="modal-body">
+
+                                  Clique "Confirmar" para excluir o usuário. <strong>Não é possível reverter esta ação!</strong>
+
+                                </div>
+                                <div class="modal-footer">
+                                  <button class="btn btn-danger" type="button" data-dismiss="modal">Cancelar</button>
+                                  <a class="btn btn-success" href="{% url 'user_delete' user.pk %}">Confirmar</a>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+
+
+
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+{% endblock %}

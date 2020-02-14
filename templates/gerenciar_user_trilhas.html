@@ -1,0 +1,99 @@
+{% extends '_base.html' %}
+{% block content %}
+
+        <!-- Begin Page Content -->
+        <div class="container-fluid">
+
+          <!-- Page Heading -->
+          <h1 class="h4 mb-4 text-gray-800">{{ user.name }}</h1>
+
+          <hr>
+
+          <div class="float-right float-sm-right float-md-right float-lg-right float-xl-right">
+            <a href="{% url 'consultar_users' %}" class="btn btn-std btn-icon-split">
+              <span class="icon text-white-50">
+                <i class="fas fa-arrow-left"></i>
+              </span>
+              <span class="text">Voltar</span>
+            </a>
+          </div>
+
+          <div class="clearfix"></div>
+
+          <hr>
+          {% if request.user.role != 'Estudante' %}
+            <div class="row justify-content-center text-center">
+              <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 col-xl-4 border border-warning shadow-sm">
+                <form method="post">
+                  {% csrf_token %}
+                    <h2 class="h5 mt-2 text-gray-800">Trilhas</h2>
+                    <hr>
+
+                  <div class="custom-control custom-checkbox mr-sm-2">
+                    {% for checkbox in form.trilha %}
+                      <label>
+                      {{ checkbox.tag }} {{ checkbox.choice_label }}
+                      </label>
+                    {% endfor %}
+                  </div>
+
+                    <hr>
+                    <div class="mb-2">
+                      <button type="submit" class="btn btn-std btn-block">Salvar</button>
+                    </div>
+                </form>
+              </div>
+            </div>
+          {% endif %}
+          <!-- Tabela Matriculado -->
+          <div class="card shadow mt-4 mb-4">
+            <div class="card-header py-3">
+              <h6 class="m-0 font-weight-bold text-std">Matriculado(a)</h6>
+            </div>
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                  <thead>
+                    <tr>
+                      <th>Trilha</th>
+                      <th>Curso</th>
+                      <th>Link</th>
+                      <th>Carga Horária</th>
+                      <th>Certificado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for linkCurso in links_users %}
+                      {% for link in linkCurso %}
+                        <tr>
+                          <td>{{ link.curso.trilha }}</td>
+                          <td>{{ link.curso }}</td>
+                          <td>{{ link }}</td>
+                          <td>{{ link.carga_horaria }} h</td>
+                          {% if userLinks %}
+                              {% for userCertificado in userLinks %}
+                                  {% if userCertificado.certificado and userCertificado.cursoLink == link %}
+                                      <td><a href="{{ userCertificado.certificado.url }}" target="_blank">Abrir</a></td>
+                                  {% elif userCertificado.cursoLink == link %}
+                                      <td><a href="{% url 'upload_certificado' user.pk link.pk %}">Upload</a></td>
+                                  {% endif %}
+                              {% endfor %}
+                          {% else %}
+                              <td><a href="{% url 'upload_certificado' user.pk link.pk %}">Upload</a></td>
+                          {% endif %}
+                        </tr>
+                      {% endfor %}
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+        <!-- /.container-fluid -->
+
+      </div>
+      <!-- End of Main Content -->
+
+{% endblock %}
